@@ -30,6 +30,7 @@ namespace KA2
         static void Main(string[] args)
         {
             var n = int.Parse(Console.ReadLine());
+
             var array = Enumerable.Range(0, n).Select(x => new Node()).ToArray();
             for (int i = 0; i < n; i++)
             {
@@ -37,30 +38,35 @@ namespace KA2
                 array[i].Add(inp);
             }
 
+            if (n < 2)
+            {
+                Console.WriteLine("N");
+                return;
+            }
+
             var queue = new Queue<Node>();
             queue.Enqueue(array[0]);
-            var b = true;
+            array[0].visited = true;
+            array[0].NodeType = NodeType.Even;
             while (queue.Count > 0)
             {
-                b = !b;
-                var currentNodeType = b ? NodeType.Even : NodeType.Odd;
                 var node = queue.Dequeue();
-                node.visited = true;
+                var nextNodeType = node.NodeType == NodeType.Odd ? NodeType.Even : NodeType.Odd;
                 foreach (var v in node.Nodes)
                 {
-                    if (!v.visited)
-                    {
-                        queue.Enqueue(v);
-                    }
-
-                    if (v.NodeType == currentNodeType)
+                    if (v.NodeType == node.NodeType)
                     {
                         Console.WriteLine("N");
                         return;
                     }
-                }
 
-                node.NodeType = currentNodeType;
+                    if (!v.visited)
+                    {
+                        queue.Enqueue(v);
+                        v.NodeType = nextNodeType;
+                        v.visited = true;
+                    }
+                }
             }
 
             Console.WriteLine("Y");
